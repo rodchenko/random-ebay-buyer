@@ -5,14 +5,14 @@ import { Meteor } from 'meteor/meteor';
 import ebay from 'ebay-api'
 
 
-Meteor.startup(() => {
+function findAndBuy() {
+  console.log('task findAndBuy fired');
 
   //
   // поиск по товарам
   //
   var results = search(["art", "painting"]);
   // console.log('results', results);
-
 
   //
   // выбор одного из результатов поиска
@@ -22,20 +22,16 @@ Meteor.startup(() => {
   // console.log('single', single, random);
   console.log('single', single.title, single.galleryPlusPictureURL);
 
-
   //
   // сохраняет выбранный товар в базу данных
   //
   Items.insert(single);
 
-
   //
   // производит покупку товара
   //
   buyItem(single.itemId);
-
-
-});
+}
 
 
 function buyItem(itemId) {
@@ -107,4 +103,11 @@ function search(parameters) {
   })();
 
 }
+
+
+var cron = new Meteor.Cron( {
+  events:{
+    "18 19 * * *" : findAndBuy
+  }
+});
 
